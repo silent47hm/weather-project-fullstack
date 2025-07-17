@@ -1,15 +1,3 @@
-/**
- * Service for fetching weather data from the backend API
- * @module services/weatherService
- */
-
-/**
- * Fetches current weather for a specific location
- * @param {string} location - The location to get weather for
- * @param {string} token - JWT token for authentication
- * @returns {Promise<Object>} - Weather data object
- * @throws {Error} - If the request fails or returns invalid data
- */
 export const getWeatherData = async (location, token) => {
   if (!location || typeof location !== 'string') {
     throw new Error('Invalid location provided');
@@ -59,12 +47,7 @@ export const getWeatherData = async (location, token) => {
   }
 };
 
-/**
- * Fetches weather data for user's current location using geolocation
- * @param {string} token - JWT token for authentication
- * @returns {Promise<Object>} - Weather data object
- * @throws {Error} - If geolocation is not supported or permission denied
- */
+
 export const getWeatherForCurrentLocation = async (token) => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
