@@ -41,12 +41,18 @@ export const loginUser = async ({ email, password }) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email, password }),
-      credentials: 'include',  // Important for sending cookies
+      credentials: 'include', // Important for cookies
     });
-    return await handleResponse(response); // Handle and return the response
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Login failed');
+    }
+
+    return await response.json();
   } catch (error) {
     console.error('Login error:', error);
-    throw error; // Rethrow the error for further handling in components
+    throw error;
   }
 };
 

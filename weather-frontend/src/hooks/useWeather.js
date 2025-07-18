@@ -1,28 +1,31 @@
 import { useState } from 'react';
 import { getWeatherData, getWeatherForCurrentLocation } from '../services/weatherService';
 
-/**
- * Custom hook to manage weather data fetching and state
- * @param {string} token - JWT token for authentication
- * @returns {Object} - Contains weather data, loading state, error, and fetch functions
- */
 const useWeather = (token) => {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchWeather = async (location) => {
-    if (!location || !token) return;
+    console.log('[useWeather] fetchWeather called with:', location);
     
+    if (!location || !token) {
+      console.error('[useWeather] Missing location or token');
+      return;
+    }
+
     setLoading(true);
     setError(null);
+    setWeatherData(null); // Clear previous data
     
     try {
+      console.log('[useWeather] Calling getWeatherData...');
       const data = await getWeatherData(location, token);
+      console.log('[useWeather] Received weather data:', data);
       setWeatherData(data);
     } catch (err) {
-      setError(err.message || 'An error occurred while fetching weather data');
-      setWeatherData(null);
+      console.error('[useWeather] Error fetching weather:', err);
+      setError(err.message || 'Failed to fetch weather data');
     } finally {
       setLoading(false);
     }
@@ -38,7 +41,7 @@ const useWeather = (token) => {
       const data = await getWeatherForCurrentLocation(token);
       setWeatherData(data);
     } catch (err) {
-      setError(err.message || 'Could not get weather for your current location');
+      setError(err.message || 'Failed to get your location weather');
       setWeatherData(null);
     } finally {
       setLoading(false);

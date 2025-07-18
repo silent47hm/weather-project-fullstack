@@ -1,6 +1,6 @@
 // src/App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext'; // Import AuthProvider
+import { AuthProvider, useAuth } from './context/AuthContext';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -8,21 +8,18 @@ import RegisterPage from './pages/RegisterPage';
 const App = () => {
   return (
     <Router>
-      {/* Make sure AuthProvider is wrapped inside Router */}
       <AuthProvider>
         <Routes>
-          {/* Default route now shows Sign Up */}
-          <Route path="/" element={<Navigate to="/register" />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/home" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+          <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
     </Router>
   );
 };
 
-// Protected route wrapper
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
@@ -34,7 +31,7 @@ const PrivateRoute = ({ children }) => {
     );
   }
 
-  return user ? children : <Navigate to="/login" />;
+  return user ? children : <Navigate to="/login" replace />;
 };
 
 export default App;

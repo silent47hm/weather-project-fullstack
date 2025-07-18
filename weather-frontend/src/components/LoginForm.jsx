@@ -1,4 +1,3 @@
-// src/components/LoginForm.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -8,6 +7,7 @@ const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const { setUser } = useAuth();
   const navigate = useNavigate();
@@ -15,32 +15,33 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
 
     try {
-      // Call the login service
       const response = await loginUser({ email, password });
       
-      // Handle successful login
-      if (response.user && response.token) {
-        // Store token in localStorage (optional - cookies are already set by backend)
-        localStorage.setItem('authToken', response.token);
-        
-        // Update auth context
-        setUser(response.user);
-        
-        // Redirect to home page
+      // Store token if using localStorage
+      localStorage.setItem('authToken', response.token);
+      
+      // Update context
+      setUser(response.user);
+      
+      // Show success message
+      setSuccess('Successfully logged in! Redirecting...');
+      
+      // Redirect after 1.5 seconds
+      setTimeout(() => {
         navigate('/');
-      } else {
-        throw new Error('Invalid response from server');
-      }
+      }, 1500);
+      
     } catch (err) {
-      console.error('Login error:', err);
       setError(err.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
@@ -51,7 +52,13 @@ const LoginForm = () => {
           {error}
         </div>
       )}
-
+      
+      {success && (
+        <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
+          {success}
+        </div>
+      )}
+      
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">

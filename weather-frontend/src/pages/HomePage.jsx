@@ -1,3 +1,4 @@
+// src/pages/HomePage.jsx
 import { useAuth } from '../context/AuthContext';
 import useWeather from '../hooks/useWeather';
 import SearchBar from '../components/SearchBar';
@@ -12,7 +13,6 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
-        {/* Header with logout button */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-blue-800">Weather Forecast</h1>
           <div className="flex items-center space-x-4">
@@ -26,13 +26,11 @@ const HomePage = () => {
           </div>
         </div>
         
-        {/* Search Component */}
         <SearchBar 
           onSearch={fetchWeather} 
           onUseCurrentLocation={fetchCurrentLocationWeather} 
         />
         
-        {/* Loading and Error States */}
         {loading && (
           <div className="text-center py-8">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
@@ -47,23 +45,16 @@ const HomePage = () => {
           </div>
         )}
         
-        {/* Weather Display */}
         {weatherData && !loading && (
           <div className="space-y-6">
-            {/* Current Weather */}
             <CurrentWeather data={weatherData.current} location={weatherData.location} />
-            
-            {/* Weather Details */}
             <WeatherDetails data={weatherData.current} />
-            
-            {/* Forecast - Only show if forecast data exists */}
             {weatherData.forecast && weatherData.forecast.length > 0 && (
               <Forecast data={weatherData.forecast} />
             )}
           </div>
         )}
         
-        {/* Initial State */}
         {!weatherData && !loading && !error && (
           <div className="text-center py-12 text-gray-500">
             <p>Search for a location to see the weather forecast</p>

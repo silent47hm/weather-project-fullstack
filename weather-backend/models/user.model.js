@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     type: String, 
     required: [true, "Password is required"],
     minlength: [8, "Password must be at least 8 characters"],
-    select: false // Never return password in queries
+    select: false
   },
   createdAt: {
     type: Date,
@@ -42,31 +42,50 @@ const userSchema = new mongoose.Schema({
 });
 
 // Password hashing middleware
-userSchema.pre("save", async function(next) {
-  if (!this.isModified("password")) return next();
-  
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+
   try {
-    const salt = await bcrypt.genSalt(12);
+    const salt = await bcrypt.genSalt(12); // Increased salt rounds for better security
     this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (err) {
-    next(err);
+    console.error('Password hashing error:', err);
+    next(new Error('Failed to hash password'));
   }
 });
 
 // Password comparison method
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  if (!candidatePassword) {
+    throw new Error('Password is required');
+  }
+  
+  if (!this.password) {
+    throw new Error('User password not found');
+  }
+
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    console.error('Password comparison failed:', error);
+    throw new Error('Authentication failed');
+  }
 };
 
 // Static method for finding by credentials
 userSchema.statics.findByCredentials = async function(email, password) {
   const user = await this.findOne({ email }).select('+password');
-  if (!user) throw new Error('Invalid credentials');
   
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw new Error('Invalid credentials');
-  
+  if (!user) {
+    throw new Error('Invalid credentials');
+  }
+
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) {
+    throw new Error('Invalid credentials');
+  }
+
   return user;
 };
 

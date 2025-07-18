@@ -1,33 +1,33 @@
 import { useState } from 'react';
 
-/**
- * SearchBar component for location input
- * @param {Object} props - Component props
- * @param {Function} props.onSearch - Function to call when search is triggered
- */
 const SearchBar = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  /**
-   * Handles form submission
-   * @param {Event} e - Form submit event
-   */
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Submitting:', searchTerm); // Debug log
+    
     if (searchTerm.trim()) {
-      onSearch(searchTerm.trim());
+      try {
+        await onSearch(searchTerm.trim());
+        // Don't clear input here - let the parent handle success/failure
+      } catch (error) {
+        console.error('Search error:', error);
+        // Keep the search term so user can try again
+      }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-8">
+    <form onSubmit={handleSubmit} className="mb-6">
       <div className="flex shadow-md rounded-lg overflow-hidden">
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Enter city name or zip code"
+          placeholder="Enter city name"
           className="flex-grow px-4 py-3 focus:outline-none"
+          required
         />
         <button
           type="submit"

@@ -1,11 +1,5 @@
 import WeatherIcon from './WeatherIcon';
 
-/**
- * Displays the current weather conditions
- * @param {Object} props - Component props
- * @param {Object} props.data - Current weather data
- * @param {string} props.location - Location name
- */
 const CurrentWeather = ({ data, location }) => {
   if (!data) return null;
 
@@ -30,15 +24,20 @@ const CurrentWeather = ({ data, location }) => {
           </div>
           
           {/* Temperature and Icon */}
-          <div className="flex items-center">
-            <WeatherIcon code={data.weather[0].icon} size="large" />
-            <div className="ml-4">
-              <span className="text-5xl font-bold text-gray-800">
-                {Math.round(data.temp)}°
-              </span>
-              <span className="text-gray-500 ml-1">C</span>
-            </div>
-          </div>
+              <div className="bg-white p-4 rounded-lg shadow mt-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-3xl font-bold">{Math.round(data.temp)}°C</p>
+          <p className="text-gray-600 capitalize">
+            {data.weather[0].description}
+          </p>
+        </div>
+        <div className="text-right">
+          <p>Humidity: {data.humidity}%</p>
+          <p>Wind: {data.wind_speed} km/h</p>
+        </div>
+      </div>
+    </div>
         </div>
       </div>
     </div>

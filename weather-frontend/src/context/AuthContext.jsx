@@ -1,56 +1,44 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { checkAuth, logoutUser } from '../services/authService';
-import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
-// AuthContext.jsx
-useEffect(() => {
-  const verifyAuth = async () => {
-    setLoading(true);
-    try {
-      const data = await checkAuth();
-      if (data?.user) {
-        setUser(data.user);
-      } else {
+  useEffect(() => {
+    const verifyAuth = async () => {
+      try {
+        const data = await checkAuth();
+        if (data?.user) {
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
         setUser(null);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Auth verification error:', error);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  verifyAuth();
-}, []);
+    verifyAuth();
+  }, []);
 
   const logout = async () => {
     try {
       await logoutUser();
       setUser(null);
-      navigate('/login');
+      localStorage.removeItem('authToken');
     } catch (error) {
       console.error('Logout failed:', error);
     }
   };
 
-  const value = {
-    user,
-    loading,
-    logout,
-    setUser
-  };
-
   return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
+    <AuthContext.Provider value={{ user, loading, logout, setUser }}>
+      {children}
     </AuthContext.Provider>
   );
 };
