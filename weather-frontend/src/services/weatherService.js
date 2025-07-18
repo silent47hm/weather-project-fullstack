@@ -1,57 +1,57 @@
-export const getWeatherData = async (location, token) => {
-  console.log('[weatherService] Starting fetch for:', location);
-  console.log('[weatherService] Using token:', token ? 'yes' : 'no');
-
-  if (!location || typeof location !== 'string') {
-    console.error('[weatherService] Invalid location provided');
-    throw new Error('Invalid location provided');
-  }
-
+export const getWeatherData = async (location, token = null) => {
   try {
-    const url = `http://localhost:5000/api/weather?city=${encodeURIComponent(location)}`;
-    console.log('[weatherService] Fetching from:', url);
-
-    const response = await fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
-    });
-
-    console.log('[weatherService] Response status:', response.status);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('[weatherService] API error:', errorText);
-      throw new Error(errorText || `Request failed with status ${response.status}`);
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const data = await response.json();
-    console.log('[weatherService] Received data:', data);
-    
-    return {
-      current: {
-        dt: Math.floor(Date.now() / 1000),
-        temp: data.temperature,
-        humidity: data.humidity,
-        wind_speed: data.windSpeed,
-        weather: [{
-          description: data.description,
-        }],
-      },
-      location: data.location || location,
-    };
+    const response = await fetch(
+      `http://localhost:5000/api/weather?city=${encodeURIComponent(location)}`,
+      {
+        headers,
+        credentials: 'include'
+      }
+    );
+
+    const contentType = response.headers.get('content-type');
+
+    if (!response.ok) {
+      if (contentType && contentType.includes('application/json')) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Weather request failed');
+      } else {
+        const errorText = await response.text();
+        console.error('Unexpected response (non-JSON):', errorText);
+        throw new Error('Unexpected server response. Please check the API.');
+      }
+    }
+
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      return {
+        current: {
+          temp: data.temperature,
+          humidity: data.humidity,
+          wind_speed: data.windSpeed,
+          weather: [{ description: data.description }],
+        },
+        location: data.location || location
+      };
+    } else {
+      const errorText = await response.text();
+      throw new Error('Invalid response format from server');
+    }
   } catch (error) {
-    console.error('[weatherService] Fetch failed:', error);
+    console.error('Weather fetch error:', error);
     throw error;
   }
 };
 
+
 /**
  * Fetches weather data for current location using geolocation
- * @param {string} token - Authentication token (JWT)
- * @returns {Object} - Weather data object
+ * - Authentication token (JWT)
+ *  - Weather data object
  */
 export const getWeatherForCurrentLocation = async (token) => {
   return new Promise((resolve, reject) => {

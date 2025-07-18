@@ -1,15 +1,13 @@
-
-
 // Import environment variables from Vite
-const API_URL = import.meta.env.VITE_APP_API_URL || 'http://localhost:5000'; // Fallback to local backend URL
+const API_URL = import.meta.env.VITE_APP_API_URL || "http://localhost:5000"; // Fallback to local backend URL
 
-console.log('API URL:', API_URL); // Optional: for debugging
+console.log("API URL:", API_URL); // Optional: for debugging done my silent
 
 // Helper function for handling the response
 const handleResponse = async (response) => {
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.error || 'Request failed');
+    throw new Error(data.error || "Request failed");
   }
   return data;
 };
@@ -18,30 +16,28 @@ const handleResponse = async (response) => {
 export const registerUser = async ({ username, email, password }) => {
   try {
     const response = await fetch(`${API_URL}/api/auth/register`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ username, email, password }),
-      credentials: 'include',  // Important for sending cookies
+      credentials: "include", // Important for sending cookies
     });
     return await handleResponse(response); // Handle and return the response
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
     throw error; // Rethrow the error for further handling in components
   }
 };
 
 // Login User
-export const loginUser = async ({ email, password }) => {
+export const loginUser = async ({ email, password }, rememberMe) => {
   try {
     const response = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
-      credentials: 'include', // Important for cookies
+      credentials: 'include'
     });
 
     if (!response.ok) {
@@ -49,54 +45,62 @@ export const loginUser = async ({ email, password }) => {
       throw new Error(errorData.error || 'Login failed');
     }
 
-    return await response.json();
+    const data = await response.json();
+    
+    // Store token based on rememberMe choice
+    if (rememberMe) {
+      localStorage.setItem('token', data.token);
+    } else {
+      sessionStorage.setItem('token', data.token);
+    }
+    
+    return data;
   } catch (error) {
     console.error('Login error:', error);
     throw error;
   }
 };
 
-// Logout User
 export const logoutUser = async () => {
   try {
-    const response = await fetch(`${API_URL}/api/auth/logout`, {
-      method: 'POST',
-      credentials: 'include',  // Important for sending cookies
+    // Clear token from storage
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
+
+    // Call backend logout
+    await fetch(`${API_URL}/api/auth/logout`, {
+      method: "POST",
+      credentials: "include",
     });
-    if (response.ok) {
-      console.log('Logged out successfully');
-    }
   } catch (error) {
-    console.error('Logout error:', error);
-    throw error; // Rethrow the error if needed
+    console.error("Logout error:", error);
+    throw error;
   }
 };
 
 export const checkAuth = async () => {
+  // Check both storage locations
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  
+  if (!token) {
+    throw new Error('No token found');
+  }
+
   try {
     const response = await fetch(`${API_URL}/api/auth/check`, {
-      credentials: 'include',
+      headers: { 'Authorization': `Bearer ${token}` },
+      credentials: 'include'
     });
 
     if (!response.ok) {
-      // Clear token if unauthorized
-      if (response.status === 401) {
-        localStorage.removeItem('authToken');
-      }
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Authentication check failed');
+      throw new Error('Authentication check failed');
     }
 
-    const data = await response.json();
-    
-    // Ensure the response has the expected structure
-    if (!data || !data.user) {
-      throw new Error('Invalid user data received');
-    }
-
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error('Auth check error:', error);
+    // Clear invalid tokens
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     throw error;
   }
 };

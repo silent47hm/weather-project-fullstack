@@ -1,43 +1,42 @@
+// context/AuthContext.js
 import { createContext, useContext, useState, useEffect } from 'react';
-import { checkAuth, logoutUser } from '../services/authService';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const verifyAuth = async () => {
-      try {
-        const data = await checkAuth();
-        if (data?.user) {
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
 
-    verifyAuth();
+    if (token && storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
-  const logout = async () => {
-    try {
-      await logoutUser();
-      setUser(null);
-      localStorage.removeItem('authToken');
-    } catch (error) {
-      console.error('Logout failed:', error);
+  const login = (userData, token, rememberMe) => {
+    setUser(userData);
+
+    if (rememberMe) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+    } else {
+      sessionStorage.setItem('token', token);
+      sessionStorage.setItem('user', JSON.stringify(userData));
     }
   };
 
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, logout, setUser }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,20 +1,12 @@
 import { useState } from 'react';
 
-const SearchBar = ({ onSearch }) => {
+const SearchBar = ({ onSearch, disabled }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Submitting:', searchTerm); // Debug log
-    
     if (searchTerm.trim()) {
-      try {
-        await onSearch(searchTerm.trim());
-        // Don't clear input here - let the parent handle success/failure
-      } catch (error) {
-        console.error('Search error:', error);
-        // Keep the search term so user can try again
-      }
+      onSearch(searchTerm.trim());
     }
   };
 
@@ -25,13 +17,19 @@ const SearchBar = ({ onSearch }) => {
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Enter city name"
-          className="flex-grow px-4 py-3 focus:outline-none"
+          placeholder={disabled ? "Please login to search" : "Enter city name"}
+          className={`flex-grow px-4 py-3 focus:outline-none ${
+            disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'
+          }`}
+          disabled={disabled}
           required
         />
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 transition-colors duration-200"
+          disabled={disabled}
+          className={`bg-blue-600 text-white px-6 py-3 ${
+            disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+          }`}
         >
           Search
         </button>
