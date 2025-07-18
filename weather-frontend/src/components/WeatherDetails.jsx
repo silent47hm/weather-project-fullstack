@@ -1,10 +1,5 @@
 import { FiDroplet, FiWind, FiEye, FiSunrise, FiSunset } from 'react-icons/fi';
 
-/**
- * Displays additional weather details
- * @param {Object} props - Component props
- * @param {Object} props.data - Current weather data
- */
 const WeatherDetails = ({ data }) => {
   if (!data) return null;
 

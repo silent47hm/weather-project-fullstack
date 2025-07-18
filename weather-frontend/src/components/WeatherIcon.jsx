@@ -1,11 +1,5 @@
 import React from 'react';
 
-/**
- * Displays weather icon based on OpenWeatherMap icon code
- * @param {Object} props - Component props
- * @param {string} props.code - OpenWeatherMap icon code
- * @param {'small'|'medium'|'large'} [props.size='medium'] - Size of the icon
- */
 const WeatherIcon = ({ code, size = 'medium' }) => {
   const sizeClasses = {
     small: 'w-12 h-12',
