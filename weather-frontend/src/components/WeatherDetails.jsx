@@ -12,75 +12,78 @@ const WeatherDetails = ({ data = {} }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden mt-6">
-      <div className="p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Weather Details</h3>
-        
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {/* Humidity */}
-          <div className="flex items-center">
-            <FiDroplet className="text-blue-500 mr-2" size={20} />
-            <div>
-              <p className="text-gray-500 text-sm">Humidity</p>
-              <p className="font-medium">{data.humidity || 0}%</p>
-            </div>
-          </div>
-          
-          {/* Wind Speed */}
-          <div className="flex items-center">
-            <FiWind className="text-blue-500 mr-2" size={20} />
-            <div>
-              <p className="text-gray-500 text-sm">Wind</p>
-              <p className="font-medium">{data.wind_speed || 0} km/h</p>
-            </div>
-          </div>
-          
-          {/* Visibility */}
-          <div className="flex items-center">
-            <FiEye className="text-blue-500 mr-2" size={20} />
-            <div>
-              <p className="text-gray-500 text-sm">Visibility</p>
-              <p className="font-medium">{data.visibility ? (data.visibility / 1000).toFixed(1) : 0} km</p>
-            </div>
-          </div>
-          
-          {/* Sunrise */}
-          <div className="flex items-center">
-            <FiSunrise className="text-yellow-500 mr-2" size={20} />
-            <div>
-              <p className="text-gray-500 text-sm">Sunrise</p>
-              <p className="font-medium">{formatTime(data.sunrise)}</p>
-            </div>
-          </div>
-          
-          {/* Sunset */}
-          <div className="flex items-center">
-            <FiSunset className="text-yellow-500 mr-2" size={20} />
-            <div>
-              <p className="text-gray-500 text-sm">Sunset</p>
-              <p className="font-medium">{formatTime(data.sunset)}</p>
-            </div>
-          </div>
-          
-          {/* Pressure */}
-          <div className="flex items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-blue-500 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-            </svg>
-            <div>
-              <p className="text-gray-500 text-sm">Pressure</p>
-              <p className="font-medium">{data.pressure || 0} hPa</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div>
+      
     </div>
+    // <div className="bg-white rounded-xl shadow-md overflow-hidden mt-6">
+    //   <div className="p-6">
+    //     <h3 className="text-lg font-semibold text-gray-800 mb-4">Weather Details</h3>
+        
+    //     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+    //       {/* Humidity */}
+    //       <div className="flex items-center">
+    //         <FiDroplet className="text-blue-500 mr-2" size={20} />
+    //         <div>
+    //           <p className="text-gray-500 text-sm">Humidity</p>
+    //           <p className="font-medium">{data.humidity || 0}%</p>
+    //         </div>
+    //       </div>
+          
+    //       {/* Wind Speed */}
+    //       <div className="flex items-center">
+    //         <FiWind className="text-blue-500 mr-2" size={20} />
+    //         <div>
+    //           <p className="text-gray-500 text-sm">Wind</p>
+    //           <p className="font-medium">{data.wind_speed || 0} km/h</p>
+    //         </div>
+    //       </div>
+          
+    //       {/* Visibility */}
+    //       <div className="flex items-center">
+    //         <FiEye className="text-blue-500 mr-2" size={20} />
+    //         <div>
+    //           <p className="text-gray-500 text-sm">Visibility</p>
+    //           <p className="font-medium">{data.visibility ? (data.visibility / 1000).toFixed(1) : 0} km</p>
+    //         </div>
+    //       </div>
+          
+    //       {/* Sunrise */}
+    //       <div className="flex items-center">
+    //         <FiSunrise className="text-yellow-500 mr-2" size={20} />
+    //         <div>
+    //           <p className="text-gray-500 text-sm">Sunrise</p>
+    //           <p className="font-medium">{formatTime(data.sunrise)}</p>
+    //         </div>
+    //       </div>
+          
+    //       {/* Sunset */}
+    //       <div className="flex items-center">
+    //         <FiSunset className="text-yellow-500 mr-2" size={20} />
+    //         <div>
+    //           <p className="text-gray-500 text-sm">Sunset</p>
+    //           <p className="font-medium">{formatTime(data.sunset)}</p>
+    //         </div>
+    //       </div>
+          
+    //       {/* Pressure */}
+    //       <div className="flex items-center">
+    //         <svg
+    //           xmlns="http://www.w3.org/2000/svg"
+    //           className="h-5 w-5 text-blue-500 mr-2"
+    //           fill="none"
+    //           viewBox="0 0 24 24"
+    //           stroke="currentColor"
+    //         >
+    //           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+    //         </svg>
+    //         <div>
+    //           <p className="text-gray-500 text-sm">Pressure</p>
+    //           <p className="font-medium">{data.pressure || 0} hPa</p>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
   );
 };
 

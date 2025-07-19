@@ -8,12 +8,12 @@ const getGreeting = () => {
   return "Good Evening";
 };
 
-const CurrentWeather = ({ 
-  data, 
-  location, 
-  historicalData = [], 
+const CurrentWeather = ({
+  data,
+  location,
+  historicalData = [],
   forecastData = [],
-  hourlyForecast = [] 
+  hourlyForecast = []
 }) => {
   const [currentTime, setCurrentTime] = useState(
     new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -29,28 +29,27 @@ const CurrentWeather = ({
   if (!data) return null;
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 w-full max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800">{location}</h2>
-          <p className="text-gray-600">{new Date().toLocaleDateString()}</p>
-        </div>
-        <div className="mt-2 md:mt-0">
-          <p className="text-lg font-semibold">{getGreeting()}</p>
-          <p className="text-gray-600">{currentTime}</p>
-        </div>
-      </div>
-
-      <div className="flex flex-col lg:flex-row gap-6">
+    <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 w-full mx-auto">
+      <div className="flex flex-col xl:flex-row gap-6">
         {/* Left Column - Current Weather + Forecasts */}
         <div className="flex-1">
+          {/* Location and Date */}
+          <div className="flex flex-col sm:flex-row justify-evenly items-start sm:items-center mb-4">
+            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800">{location}</h2>
+            <p className="text-gray-600 font-medium text-sm sm:text-base">
+              {new Date().toLocaleDateString()}
+            </p>
+          </div>
+
           {/* Current Weather */}
-          <div className="bg-blue-50 rounded-xl p-6 mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div>
-                <p className="text-7xl font-bold text-gray-800">
+          <div className="rounded-xl p-4 sm:p-6 mb-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between md:lg:justify-center gap-4">
+              <div className="text-center sm:text-left">
+                <p className="text-5xl sm:text-7xl md:text-9xl font-bold text-gray-800">
                   {Math.round(data.temp)}°C
+                </p>
+                <p className="text-lg sm:text-xl text-gray-600 capitalize mt-2">
+                  {data.weather[0].description}
                 </p>
               </div>
               <div className="flex flex-col gap-2">
@@ -64,33 +63,17 @@ const CurrentWeather = ({
                 </div>
               </div>
             </div>
-            <div className="flex flex-col items-end">
-              <WeatherIcon code={data.weather[0].icon} size="large" />
-              <p className="text-xl text-gray-600 capitalize mt-2">
-                {data.weather[0].description}
-              </p>
-            </div>
           </div>
 
-          {/* Combined Forecast Cards */}
+          {/* Weather Timeline */}
           <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-4">Weather Timeline</h3>
-            <div className="grid grid-cols-6 gap-4">
-              {/* Past 3 Days */}
-              {historicalData.slice(0, 3).map((day, index) => (
-                <ForecastCard 
-                  key={`past-${index}`}
-                  day={day}
-                  type="past"
-                />
-              ))}
-              
-              {/* Next 3 Days */}
-              {forecastData.slice(0, 3).map((day, index) => (
+            <h3 className="text-lg sm:text-xl font-semibold mb-4">Weather Timeline</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+              {[...historicalData.slice(0, 3), ...forecastData.slice(0, 3)].map((day, index) => (
                 <ForecastCard
-                  key={`future-${index}`}
+                  key={index}
                   day={day}
-                  type="future"
+                  type={index < 3 ? "past" : "future"}
                 />
               ))}
             </div>
@@ -98,64 +81,80 @@ const CurrentWeather = ({
         </div>
 
         {/* Right Column - Hourly Forecast */}
-        <div className="lg:w-1/3">
-          <h3 className="text-xl font-semibold mb-4">Hourly Forecast</h3>
-          {hourlyForecast.length > 0 ? (
-            <div className="space-y-3">
-              <div className="grid grid-cols-3 gap-3">
-                {hourlyForecast.slice(0, 3).map((hour, index) => (
-                  <HourCard key={`hour-${index}`} hour={hour} />
-                ))}
+        <div className="bg-gray-100 rounded-2xl w-full xl:w-1/3">
+          <div className="pr-3 pl-3 pt-3 sm:p-6">
+            <div className="flex flex-col sm:flex-row xl:flex-col items-center justify-between gap-4 mb-6">
+              <div className="text-center mb:lg: pb-1">
+                <p className="text-lg font-semibold">{getGreeting()}</p>
+                <p className="text-gray-600">{currentTime}</p>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                {hourlyForecast.slice(3, 6).map((hour, index) => (
-                  <HourCard key={`hour-${index+3}`} hour={hour} />
-                ))}
+              <div className="flex items-center gap-4">
+                <p className="text-4xl sm:text-5xl font-bold text-gray-800">
+                  {Math.round(data.temp)}°C
+                </p>
+                <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">Humidity:</span>
+                  <span className="font-medium">{data.humidity}%</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">Wind:</span>
+                  <span className="font-medium">{data.wind_speed} km/h</span>
+                </div>
+              </div>
               </div>
             </div>
-          ) : (
-            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-              <p className="text-yellow-700">Hourly data not available</p>
-            </div>
-          )}
+
+            <h3 className="text-lg sm:text-xl font-semibold mb-4">Hourly Forecast</h3>
+            {hourlyForecast.length > 0 ? (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {hourlyForecast.slice(0, 6).map((hour, index) => (
+                    <HourCard key={`hour-${index}`} hour={hour} />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                <p className="text-yellow-700">Hourly data not available</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-// Forecast Card Component
+// Forecast Card Component (updated for responsiveness)
 const ForecastCard = ({ day, type }) => {
   const date = day.date ? new Date(day.date) : new Date();
   const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-  const dateString = date.toLocaleDateString();
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm p-4 text-center border-l-4 ${
+    <div className={`bg-white rounded-lg shadow-sm p-3 text-center border-l-4 ${
       type === 'past' ? 'border-gray-300' : 'border-blue-300'
     }`}>
-      <p className="font-medium text-gray-800">{dayName}</p>
-      <p className="text-sm text-gray-500 mb-2">{dateString}</p>
-      <WeatherIcon code={day.weather[0].icon} size="small" />
-      <p className="text-lg font-bold mt-2">{Math.round(day.temp)}°C</p>
-      <p className="text-xs text-gray-500 capitalize">
+      <p className="font-medium text-gray-800 text-sm sm:text-base">{dayName}</p>
+      
+      <p className="text-md sm:text-lg font-bold">{Math.round(day.temp)}°C</p>
+      <p className="text-xs sm:text-sm text-gray-500 capitalize">
         {day.weather[0].description}
       </p>
-      <span className="text-xs text-gray-400 mt-1 block">
+        <span className="text-xs text-gray-400 mt-1 block">
         {type === 'past' ? 'Past' : 'Forecast'}
       </span>
     </div>
   );
 };
 
-// Hourly Card Component
+// Hourly Card Component (updated for responsiveness)
 const HourCard = ({ hour }) => (
-  <div className="bg-white rounded-lg shadow-sm p-2 text-center hover:shadow-md transition-shadow">
-    <p className="text-xs font-medium text-gray-500">{hour.day}</p>
-    <p className="text-sm font-medium text-gray-800 mb-1">{hour.time}</p>
-    <WeatherIcon code={hour.weather[0].icon} size="xsmall" />
-    <p className="text-md font-bold mt-1">{Math.round(hour.temp)}°C</p>
-    <div className="flex justify-center gap-2 mt-1 text-xs text-gray-500">
+  <div className="bg-white rounded-lg shadow-sm p-2 sm:p-3 text-center hover:shadow-md transition-shadow">
+    <p className="text-xs sm:text-sm font-medium text-gray-800">{hour.time}</p>
+    
+    <p className="text-sm sm:text-md font-bold">{Math.round(hour.temp)}°C</p>
+    <div className="flex justify-center gap-1 sm:gap-2 mt-1 text-xs text-gray-500">
       <span>{hour.humidity}%</span>
       <span>•</span>
       <span>{hour.wind_speed} km/h</span>
@@ -163,4 +162,4 @@ const HourCard = ({ hour }) => (
   </div>
 );
 
-export default CurrentWeather;
+export default CurrentWeather

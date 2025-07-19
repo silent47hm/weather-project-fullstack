@@ -8,20 +8,6 @@ const useWeather = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const formatTimeAndDay = (timestamp) => {
-    try {
-      if (!timestamp) return { time: '--:--', day: '---' };
-      const date = new Date(timestamp * (timestamp > 1e10 ? 1 : 1000));
-      return {
-        time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        day: date.toLocaleDateString('en-US', { weekday: 'short' })
-      };
-    } catch (e) {
-      console.warn('DateTime formatting error:', e);
-      return { time: '--:--', day: '---' };
-    }
-  };
-
   const getWeatherIcon = (description) => {
     if (!description) return '01d';
     const desc = description.toLowerCase();
@@ -51,46 +37,39 @@ const useWeather = () => {
     });
 
     return {
-      location: apiData.location || apiData.timezone || 'Unknown Location',
+      location: apiData.location || 'Unknown Location',
       currentWeather: {
-        temp: apiData.current?.temp || apiData.currentWeather?.temperature || 0,
+        temp: apiData.currentWeather?.temperature || 0,
         weather: [{
-          description: apiData.current?.weather?.[0]?.description || 
-                     apiData.currentWeather?.description || 
-                     'Unknown',
-          icon: apiData.current?.weather?.[0]?.icon || 
-               getWeatherIcon(apiData.current?.weather?.[0]?.description)
+          description: apiData.currentWeather?.description || 'Unknown',
+          icon: getWeatherIcon(apiData.currentWeather?.description)
         }],
-        humidity: apiData.current?.humidity || apiData.currentWeather?.humidity || 0,
-        wind_speed: apiData.current?.wind_speed || apiData.currentWeather?.windSpeed || 0
+        humidity: apiData.currentWeather?.humidity || 0,
+        wind_speed: apiData.currentWeather?.windSpeed || 0
       },
       historicalData,
-      forecastData: (apiData.dailyForecast || apiData.daily || []).slice(0, 3).map(item => ({
-        date: item.dt ? new Date(item.dt * 1000).toISOString() : item.date,
-        temp: item.temp?.day || item.temp || item.temperature || 0,
+      forecastData: (apiData.dailyForecast || []).slice(0, 3).map(item => ({
+        date: item.date,
+        temp: item.temperature || 0,
         weather: [{
-          description: item.weather?.[0]?.description || item.description || 'Unknown',
-          icon: item.weather?.[0]?.icon || getWeatherIcon(item.weather?.[0]?.description)
+          description: item.description || 'Unknown',
+          icon: getWeatherIcon(item.description)
         }],
         humidity: item.humidity || 0,
-        wind_speed: item.wind_speed || item.windSpeed || 0
+        wind_speed: item.windSpeed || 0
       })),
-      hourlyForecast: (apiData.hourly || apiData.hourlyForecast || [])
+      hourlyForecast: (apiData.hourlyForecast || [])
         .slice(0, 6)
-        .map(item => {
-          const { time, day } = formatTimeAndDay(item.dt || item.time);
-          return {
-            time,
-            day,
-            temp: item.temp || item.temperature || 0,
-            weather: [{
-              description: item.weather?.[0]?.description || item.description || 'Unknown',
-              icon: item.weather?.[0]?.icon || getWeatherIcon(item.weather?.[0]?.description)
-            }],
-            humidity: item.humidity || 0,
-            wind_speed: item.wind_speed || item.windSpeed || 0
-          };
-        })
+        .map(item => ({
+          time: item.time || '--:--',
+          temp: item.temperature || 0,
+          weather: [{
+            description: item.description || 'Unknown',
+            icon: getWeatherIcon(item.description)
+          }],
+          humidity: item.humidity || 0,
+          wind_speed: item.windSpeed || 0
+        }))
     };
   }, []);
 
