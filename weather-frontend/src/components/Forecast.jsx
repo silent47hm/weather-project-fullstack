@@ -5,19 +5,19 @@ const Forecast = ({ data = [] }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-xl overflow-hidden p-6 mt-6">
-      <h3 className="text-2xl font-semibold text-gray-800 mb-4">7-Day Forecast</h3>
+      {/* <h3 className="text-2xl font-semibold text-gray-800 mb-4">7-Day Forecast</h3> */}
       
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         {data.map((day, index) => (
           <div key={index} className="flex items-center justify-between py-4 border-b border-gray-200 last:border-0">
-            {/* Day */}
+            
             <div className="w-24">
               <p className="font-medium text-gray-800">
                 {day.dt ? new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'short' }) : "N/A"}
               </p>
             </div>
             
-            {/* Weather Icon */}
+            
             <div className="flex-grow flex items-center">
               <WeatherIcon code={day.weather?.[0]?.icon || "01d"} size="small" />
               <p className="ml-2 text-gray-600 text-sm">
@@ -25,7 +25,7 @@ const Forecast = ({ data = [] }) => {
               </p>
             </div>
             
-            {/* Temperature Range */}
+            
             <div className="flex items-center">
               <span className="font-medium text-gray-800 w-10 text-right">
                 {Math.round(day.temp?.max || 0)}°
@@ -37,7 +37,7 @@ const Forecast = ({ data = [] }) => {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };
