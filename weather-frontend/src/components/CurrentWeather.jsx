@@ -58,12 +58,12 @@ const CurrentWeather = ({
             <WeatherIcon code={data.weather[0].icon} size="large" />
           </div>
 
-          {/* Forecast Cards */}
+          {/* Combined Forecast Cards */}
           <div className="mb-6">
-            <h3 className="text-xl font-semibold mb-4">Past & Future Forecast</h3>
-            <div className="grid grid-cols-3 gap-4">
+            <h3 className="text-xl font-semibold mb-4">Weather Timeline</h3>
+            <div className="grid grid-cols-6 gap-4">
               {/* Past 3 Days */}
-              {historicalData.map((day, index) => (
+              {historicalData.slice(0, 3).map((day, index) => (
                 <ForecastCard 
                   key={`past-${index}`}
                   day={day}
@@ -72,7 +72,7 @@ const CurrentWeather = ({
               ))}
               
               {/* Next 3 Days */}
-              {forecastData.map((day, index) => (
+              {forecastData.slice(0, 3).map((day, index) => (
                 <ForecastCard
                   key={`future-${index}`}
                   day={day}
@@ -127,9 +127,9 @@ const ForecastCard = ({ day, type }) => {
       <p className="text-xs text-gray-500 capitalize">
         {day.weather[0].description}
       </p>
-      {type === 'past' && (
-        <span className="text-xs text-gray-400 mt-1 block">Past</span>
-      )}
+      <span className="text-xs text-gray-400 mt-1 block">
+        {type === 'past' ? 'Past' : 'Forecast'}
+      </span>
     </div>
   );
 };
