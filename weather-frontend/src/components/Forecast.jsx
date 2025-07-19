@@ -1,7 +1,7 @@
 import WeatherIcon from './WeatherIcon';
 
-const Forecast = ({ data }) => {
-  if (!data || !data.length) return null;
+const Forecast = ({ data = [] }) => {
+  if (!data.length) return null;
 
   return (
     <div className="bg-white rounded-xl shadow-xl overflow-hidden p-6 mt-6">
@@ -13,24 +13,26 @@ const Forecast = ({ data }) => {
             {/* Day */}
             <div className="w-24">
               <p className="font-medium text-gray-800">
-                {new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'short' })}
+                {day.dt ? new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'short' }) : "N/A"}
               </p>
             </div>
             
             {/* Weather Icon */}
             <div className="flex-grow flex items-center">
-              <WeatherIcon code={day.weather[0].icon} size="small" />
-              <p className="ml-2 text-gray-600 text-sm">{day.weather[0].description}</p>
+              <WeatherIcon code={day.weather?.[0]?.icon || "01d"} size="small" />
+              <p className="ml-2 text-gray-600 text-sm">
+                {day.weather?.[0]?.description || "Unknown"}
+              </p>
             </div>
             
             {/* Temperature Range */}
             <div className="flex items-center">
               <span className="font-medium text-gray-800 w-10 text-right">
-                {Math.round(day.temp.max)}°
+                {Math.round(day.temp?.max || 0)}°
               </span>
               <span className="text-gray-400 mx-1">/</span>
               <span className="text-gray-500 w-10">
-                {Math.round(day.temp.min)}°
+                {Math.round(day.temp?.min || 0)}°
               </span>
             </div>
           </div>

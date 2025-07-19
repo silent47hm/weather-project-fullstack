@@ -1,10 +1,10 @@
 import { FiDroplet, FiWind, FiEye, FiSunrise, FiSunset } from 'react-icons/fi';
 
-const WeatherDetails = ({ data }) => {
-  if (!data) return null;
+const WeatherDetails = ({ data = {} }) => {
+  if (!data || Object.keys(data).length === 0) return null;
 
-  // Helper function to format time from UNIX timestamp
   const formatTime = (timestamp) => {
+    if (!timestamp) return "N/A";
     return new Date(timestamp * 1000).toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
@@ -12,7 +12,7 @@ const WeatherDetails = ({ data }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden">
+    <div className="bg-white rounded-xl shadow-md overflow-hidden mt-6">
       <div className="p-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Weather Details</h3>
         
@@ -22,7 +22,7 @@ const WeatherDetails = ({ data }) => {
             <FiDroplet className="text-blue-500 mr-2" size={20} />
             <div>
               <p className="text-gray-500 text-sm">Humidity</p>
-              <p className="font-medium">{data.humidity}%</p>
+              <p className="font-medium">{data.humidity || 0}%</p>
             </div>
           </div>
           
@@ -31,7 +31,7 @@ const WeatherDetails = ({ data }) => {
             <FiWind className="text-blue-500 mr-2" size={20} />
             <div>
               <p className="text-gray-500 text-sm">Wind</p>
-              <p className="font-medium">{data.wind_speed} km/h</p>
+              <p className="font-medium">{data.wind_speed || 0} km/h</p>
             </div>
           </div>
           
@@ -40,7 +40,7 @@ const WeatherDetails = ({ data }) => {
             <FiEye className="text-blue-500 mr-2" size={20} />
             <div>
               <p className="text-gray-500 text-sm">Visibility</p>
-              <p className="font-medium">{data.visibility / 1000} km</p>
+              <p className="font-medium">{data.visibility ? (data.visibility / 1000).toFixed(1) : 0} km</p>
             </div>
           </div>
           
@@ -71,16 +71,11 @@ const WeatherDetails = ({ data }) => {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
             </svg>
             <div>
               <p className="text-gray-500 text-sm">Pressure</p>
-              <p className="font-medium">{data.pressure} hPa</p>
+              <p className="font-medium">{data.pressure || 0} hPa</p>
             </div>
           </div>
         </div>

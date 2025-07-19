@@ -1,36 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import useWeather from '../hooks/useWeather';
 import SearchBar from '../components/SearchBar';
 import CurrentWeather from '../components/CurrentWeather';
+import WeatherDetails from '../components/WeatherDetails';
 import Forecast from '../components/Forecast';
 
-// Helper function to get greeting based on time of day
 const getGreeting = () => {
   const hours = new Date().getHours();
-  if (hours < 12) return 'Good Morning';
-  if (hours < 18) return 'Good Afternoon';
-  return 'Good Evening';
+  if (hours < 12) return "Good Morning";
+  if (hours < 18) return "Good Afternoon";
+  return "Good Evening";
 };
 
 const HomePage = () => {
   const { user, logout } = useAuth();
-  const { weatherData, loading, error, fetchWeather } = useWeather();
-  const [logoutMessage, setLogoutMessage] = useState('');
+  const { weatherData, loading, error, fetchWeather, fetchCurrentLocationWeather } = useWeather();
+  const [logoutMessage, setLogoutMessage] = useState("");
+  const [defaultLoaded, setDefaultLoaded] = useState(false);
+
+  useEffect(() => {
+    if (user && !defaultLoaded) {
+      fetchWeather('New York');
+      setDefaultLoaded(true);
+    }
+  }, [user, defaultLoaded, fetchWeather]);
 
   const handleLogout = () => {
     logout();
-    setLogoutMessage('Logout Successful');
-    setTimeout(() => setLogoutMessage(''), 3000); // Clear message after 3 seconds
+    setLogoutMessage("Logout Successful");
+    setTimeout(() => setLogoutMessage(""), 3000);
+    setDefaultLoaded(false);
   };
 
   const greeting = getGreeting();
 
   return (
-    <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: 'url("your-image-url.jpg")' }}>
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-100 p-4">
+      <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-white">{greeting}</h1>
+          <h1 className="text-4xl font-bold text-gray-800">{greeting}</h1>
           {user && (
             <button
               onClick={handleLogout}
@@ -53,29 +62,39 @@ const HomePage = () => {
           </div>
         ) : (
           <>
-            <SearchBar onSearch={fetchWeather} disabled={loading} />
+            <SearchBar 
+              onSearch={(location) => {
+                fetchWeather(location);
+                setDefaultLoaded(true);
+              }}
+              onUseCurrentLocation={fetchCurrentLocationWeather}
+              disabled={!user || loading}
+            />
 
             {loading && (
-              <div className="text-center py-8">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                <p className="mt-2 text-blue-700">Loading weather data...</p>
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
               </div>
             )}
 
             {error && (
-              <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
-                <p className="font-bold">Error</p>
-                <p>{error}</p>
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
+                <p className="text-red-700">{error}</p>
               </div>
             )}
 
-            {weatherData ? (
+            {weatherData && (
               <>
-                <CurrentWeather data={weatherData.current} location={weatherData.location} />
-                <Forecast data={weatherData.daily} />
+                <CurrentWeather 
+                  data={weatherData.currentWeather || {}}
+                  location={weatherData.location || "Unknown Location"}
+                  historicalData={weatherData.historicalData || []}
+                  forecastData={weatherData.forecastData || []}
+                  hourlyForecast={weatherData.hourlyForecast || []}
+                />
+                <WeatherDetails data={weatherData.currentWeather || {}} />
+                <Forecast data={weatherData.forecastData || []} />
               </>
-            ) : (
-              <p>No weather data available</p>
             )}
           </>
         )}
