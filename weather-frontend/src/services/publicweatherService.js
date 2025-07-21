@@ -14,13 +14,13 @@ export const getPublicWeatherData = async (location) => {
     }
 
     const response = await fetch(
-      `http://localhost:5000/api/weather?${params.toString()}`,
+      `http://localhost:5000/api/weather/public?${params.toString()}`, //Public "/public missed in url"
       {
         headers: {
-        //   'Authorization': `Bearer ${token}`,
+    
           'Content-Type': 'application/json'
         }
-        // credentials: 'include'
+     
       }
     );
 
@@ -29,6 +29,8 @@ export const getPublicWeatherData = async (location) => {
       throw new Error(error.message || 'Failed to fetch weather data');
     }
 
+
+
     return await response.json();
   } catch (error) {
     console.error('WeatherService Error:', error);
@@ -36,27 +38,3 @@ export const getPublicWeatherData = async (location) => {
   }
 };
 
-// export const getWeatherForCurrentLocation = async (token) => {
-//   return new Promise((resolve, reject) => {
-//     if (!navigator.geolocation) {
-//       reject(new Error('Geolocation not supported'));
-//       return;
-//     }
-
-//     navigator.geolocation.getCurrentPosition(
-//       async (position) => {
-//         try {
-//           const { latitude, longitude } = position.coords;
-//           const data = await getWeatherData(`${latitude},${longitude}`, token);
-//           resolve(data);
-//         } catch (error) {
-//           reject(error);
-//         }
-//       },
-//       (error) => {
-//         reject(new Error(`Geolocation error: ${error.message}`));
-//       },
-//       { timeout: 10000 }
-//     );
-//   });
-// };
