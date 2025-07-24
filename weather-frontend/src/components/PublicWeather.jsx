@@ -168,7 +168,7 @@ const ForecastCard = ({ day, type }) => {
     <div
   className={`bg-white rounded-xl p-4 text-center h-40 md:lg:w-36 ${
     isToday ? "border-1 border-black" : "border-l-4"
-  }`}
+  }`} 
 >
   <p className="text-lg text-gray-800 md:lg:text-[20px] font-semibold">{dayName}</p>
   <p className="text-2xl font-bold md:lg:text-[36px] pt-3">{Math.round(day.temp)}°</p>
